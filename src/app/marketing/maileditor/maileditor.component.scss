@@ -1,0 +1,371 @@
+
+.tools {
+  min-width: 200px;
+  margin: 2px;
+  padding: 2px;
+}
+
+.savetobutton {
+  // margin-left: 70%;
+  // margin-top: 40%;
+  bottom: 40px;
+  right: 50px;
+  position: fixed;
+  z-index: 200000;
+}
+
+
+.tool-box {
+    margin: 2px;
+    border: solid 1px #ccc;
+    padding: 2px;
+    color: rgba(0, 0, 0, 0.87);
+    max-height: 100%;
+    cursor: move;
+    background: whitesmoke;
+}
+
+.edit_table{
+  min-width: 300px;
+  margin-top: 10px;
+  position: relative;
+  // overflow: hidden;
+} 
+
+.template {
+  min-width: 600px;
+  // width: 100%;
+  margin: 2px;
+  padding: 2px;
+}
+
+.edit {
+  min-width: 300px;
+  margin: auto;
+  // padding: 2px;
+  height: 100%;
+}
+
+.convertbutton {
+  margin-left: 80%;
+  margin-top: 30%;
+  z-index: 99;
+  position: fixed;
+  float: right;
+}
+
+.template-container {
+    position: relative;
+    height: auto;
+    margin: 0px 20px 0px 20px;
+}
+
+.imggreyclass {
+  -webkit-filter: grayscale(1); /* Webkit */
+  filter: gray; /* IE6-9 */
+  filter: grayscale(1); /* W3C */
+}
+
+
+.imgblursection {
+  z-index: 1;
+  width: calc(100% - 20px);
+  // height: calc(100% - 20px);
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  filter: blur(4px);
+
+}
+
+
+.fullwidthsection {
+  margin: 0px 0px 0px 0px;
+}
+  
+  .tools-list {
+    margin: 2px;
+    border: solid 1px #ccc;
+    padding: 2px;
+    min-height: 60px;
+    max-height: 100%;
+    min-width: 150px;
+    max-width: 200px;
+    background: white;
+    border-radius: 4px;
+    position: fixed;
+    top: 180px;
+    left: 10px;
+    z-index: 60;
+  }
+
+  .section-box {
+    position: relative;
+    height: auto;
+    min-height: 60px;
+    width: 100%;
+    // width: auto;
+    // overflow:hidden;
+    z-index: 2;
+  }
+  
+  .column-box {
+    border: solid 1px #ccc;
+    border-radius: 2px;
+    color: rgba(0, 0, 0, 0.87);
+    cursor: move;
+    max-height: 100%;
+    min-height: 60px;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+
+  .textbox-edit-button{
+    cursor:pointer;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+  }
+
+  .item-box {
+    height: auto;
+    // width: 100%;
+    top: 0;
+    left: 0;
+    margin: 5px;
+    border: dashed 3px #ccc;
+    border-radius: 4px;
+  }
+
+  .itemlabel {
+    height: 10px;
+    font-size: 6pt;
+    position: relative;
+    top: -20px;
+    overflow: hidden;
+    z-index: 9;
+    opacity: 0.8;
+  }
+
+  .sectionlabel {
+    width: 80px;
+    height: 10px;
+    font-size: 6pt;
+    position: absolute;
+    z-index: 30;
+    opacity: 0.4;
+    background-color: white;
+    bottom: 0;
+    right: 0;
+    margin-right: 10px;
+  }
+
+  .sectionlabelbuttons:hover  {
+    background-color: grey;
+  }
+
+  .sectionlabel:hover{
+    opacity: 1;
+  }
+
+  .columnlabel {
+    height: 10px;
+    font-size: 6pt;
+    position: absolute;
+     z-index: 30;
+    top: 0;
+    left: 0;
+    opacity: 0.4;
+    background-color: white;
+    width: 60px;
+  }
+  
+  .columnlabel:hover{
+    opacity: 1;
+  }
+
+  .text-edit-icon {
+    float: left;
+  }
+
+  .icon-label {
+    float: right;
+  }
+
+  .icon-label:hover{
+    color: red;
+  }
+
+  .cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  }
+  
+  .cdk-drag-placeholder {
+    opacity: 0;
+  }
+  
+  .cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  
+  .example-box:last-child {
+    border: none;
+  }
+  
+  .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+
+  * {box-sizing:border-box}
+
+/* Slideshow container */
+.slideshow-container {
+  max-width: 600px;
+  position: relative;
+  margin: auto;
+}
+
+/* Hide the images by default */
+.mySlides {
+  display: none;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+/* Caption text */
+.text {
+  color: #f2f2f2;
+  font-size: 15px;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+/* The dots/bullets/indicators */
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+@keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+.carouselimages{
+  max-width: 100%; 
+  height: auto;
+}
+
+.thumbnails {
+  max-height: 70px;
+  max-width: 70px;
+}
+
+.verticalSocial {
+  display: inline-block;
+}
+
+// .horizontalSocial {
+  
+// }
+
+.full-width-item {
+  width: 100%;
+}
+
+p {
+  font-family: Lato;
+}
+
+.showprogressbardiv {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 102;
+  background-color: white;
+}
+
+.speed-dial-container {
+  position: absolute;
+  right: 15px;
+}
+
+.speed-dial-container.top {
+  top: 15px;
+}
+
+.speed-dial-container.bottom {
+  bottom: 15px;
+}
+
+
+
+

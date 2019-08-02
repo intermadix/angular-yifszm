@@ -1,0 +1,1408 @@
+<div fxLayout="row" cdkDropListGroup style="width: 100%;">
+
+  <div class="savetobutton">
+  <button mat-fab color="primary" matTooltip="Convert to Email" *ngIf="!updatemail" (click)="ConvertToMail()"><mat-icon>save</mat-icon></button>
+  <button mat-fab color="primary" matTooltip="Update Template" *ngIf="updatemail" (click)="ConvertToMail()"><mat-icon>save</mat-icon></button>
+  <button mat-mini-fab color="primary" matTooltip="New Template" (click)="CreateNewMail()"><mat-icon>add</mat-icon></button>
+</div>
+
+  <div fxFlex="10%" class="tools">
+    <div cdkDropList #toolsetList="cdkDropList" [cdkDropListData]="toolset" class="tools-list"
+      (cdkDropListDropped)="drop($event)">
+      <span>Tools</span>
+      <br style='margin: 5px'>
+      <mat-progress-bar *ngIf='showprogressbar' mode="indeterminate"></mat-progress-bar>
+      
+      <div class="tool-box" *ngFor="let item of toolset" cdkDrag>
+        <div *ngIf="item.type === 'Image'" matTooltip="add iamge">
+          <mat-icon class="iconsize-18" matSuffix>add_photo_alternate</mat-icon> {{item.type}}
+        </div>
+        <div *ngIf="item.type === 'Text'" matTooltip="add text">
+          <mat-icon class="iconsize-18" matSuffix>text_fields</mat-icon> {{item.type}}
+        </div>
+        <div *ngIf="item.type === 'Button'" matTooltip="add button">
+          <mat-icon class="iconsize-18" matSuffix>add_box</mat-icon> {{item.type}}
+        </div>
+        <div *ngIf="item.type === 'Divider'" matTooltip="blank divider">
+          <mat-icon class="iconsize-18" matSuffix>line_style</mat-icon> {{item.type}}
+        </div>
+        <div *ngIf="item.type === 'Accordion'" matTooltip="text Accordion">
+          <mat-icon class="iconsize-18" matSuffix>view_day</mat-icon> {{item.type}}
+        </div>
+        <div *ngIf="item.type === 'Carousel'" matTooltip="image carousel">
+          <mat-icon class="iconsize-18" matSuffix>view_carousel</mat-icon> {{item.type}}
+        </div>
+        <div *ngIf="item.type === 'Social'" matTooltip="share buttons">
+          <mat-icon class="iconsize-18" matSuffix>thumb_up_alt</mat-icon> {{item.type}}
+        </div>
+        <div *ngIf="item.type === 'Footer'" matTooltip="add Footer">
+          <mat-icon class="iconsize-18" matSuffix>fingerprint</mat-icon> {{item.type}}
+        </div>
+      </div>
+      <br>
+      <mat-accordion>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Standard Components
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div *ngFor="let components of option.standardcomponents; let i1 = index;" fxLayout="row">
+              <div *ngFor="let items of components">
+                  <div style="border: lightgray; border-style: solid; border-width: 1px;" *ngFor="let parts of items">
+                    <label style="font-size: 0.2vw"> {{parts.type}}</label>
+                </div>
+            </div>
+            <mat-icon matTooltip="add to mail" (click)="onAddStandardSectionPart(i1)" class="sectionlabelbuttons iconsize-10" matSuffix>add</mat-icon>
+            <mat-icon matTooltip="delete from profile" (click)="onDeleteStandardSectionPart(i1)" class="sectionlabelbuttons iconsize-10" matSuffix>delete</mat-icon>
+            </div>
+            <button (click)="deleteAllStandardComp()" mat-button>Delete All</button>
+          </mat-expansion-panel>
+        </mat-accordion>
+
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Dynamic input
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div fxLayout="column" style="width: 200px;"
+            matTooltip="Click to copy, insert in text to retreive mailinglist information">
+            <label (mouseenter)="$event.stopImmediatePropagation()" (mouseleave)="$event.stopImmediatePropagation()"
+              matTooltip="Copied!" #tooltip="matTooltip" (click)="tooltip.toggle()"
+              (click)="copyMessage('%recipient_name%')">%recipient_name%</label>
+            <label (mouseenter)="$event.stopImmediatePropagation()" (mouseleave)="$event.stopImmediatePropagation()"
+              matTooltip="Copied!" #tooltip="matTooltip" (click)="tooltip.toggle()"
+              (click)="copyMessage('%recipient.company%')">%recipient.company%</label>
+            <label (mouseenter)="$event.stopImmediatePropagation()" (mouseleave)="$event.stopImmediatePropagation()"
+              matTooltip="Copied!" #tooltip="matTooltip" (click)="tooltip.toggle()"
+              (click)="copyMessage('%recipient%')">%recipient%</label>
+            <label (mouseenter)="$event.stopImmediatePropagation()" (mouseleave)="$event.stopImmediatePropagation()"
+              matTooltip="Copied!" #tooltip="matTooltip" (click)="tooltip.toggle()"
+              (click)="copyMessage('%recipient.firstname%')">%recipient.firstname%</label>
+            <label (mouseenter)="$event.stopImmediatePropagation()" (mouseleave)="$event.stopImmediatePropagation()"
+              matTooltip="Copied!" #tooltip="matTooltip" (click)="tooltip.toggle()"
+              (click)="copyMessage('%recipient.lastname%')">%recipient.lastname%</label>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+  
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Email Settings
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <form>
+            <mat-form-field class="example-full-width">
+              <input [(ngModel)]=company.companyfont type="text" placeholder="Template Font" aria-label="Number" matInput
+                [formControl]="myControlfont" [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let font of filteredfonts | async" [value]="font">
+                  {{font}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </form>
+          <table matTooltip="click to set color">
+            <tr>
+              <td>Primairy color</td>
+              <td>Secondairy color</td>
+            </tr>
+            <tr>
+              <td (mouseenter)="$event.stopImmediatePropagation()" (mouseleave)="$event.stopImmediatePropagation()"
+              matTooltip="Copied!" #tooltip="matTooltip" (click)="tooltip.toggle()"(click)="copyMessage(company.companyprimairycolor)">
+                {{company.companyprimairycolor}}</td>
+              <td (mouseenter)="$event.stopImmediatePropagation()" (mouseleave)="$event.stopImmediatePropagation()"
+              matTooltip="Copied!" #tooltip="matTooltip" (click)="tooltip.toggle()"(click)="copyMessage(company.companysecondarycolor)">
+                {{company.companysecondarycolor}}</td>
+            </tr>
+          </table>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+
+
+  <div *ngIf='showprogressbar' class="showprogressbardiv">
+    <div style="width: 50%; margin: 0 auto; justify-content: center; align-items: center;">
+        <mat-spinner style="width: 50%; margin: 0 auto;" mode="indeterminate"></mat-spinner>
+        <br>
+        <h1>Creating your awesome mail template one moment please... </h1>
+    </div>
+  </div>
+  
+
+  <div fxFlex="70%" class="template" >
+    <table>
+      <tr>
+        <td>
+          <mat-form-field style="width: 95%;" appearance="outline">
+            <input #inputsubject [(ngModel)]=subject type="text" matInput placeholder="Subject Line">
+            <mat-icon matTooltip="select Emoji" (click)="onshowemoji('subject')" matSuffix>insert_emoticon</mat-icon>
+            <mat-hint align="end">{{inputsubject.value?.length || 0}}/78</mat-hint>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field style="width: 95%;" appearance="outline">
+            <input matTooltip="First lines shown in email client" #inputpreview [(ngModel)]=preview type="text" matInput
+              placeholder="Preview">
+            <mat-icon matTooltip="select Emoji" (click)="onshowemoji('preview')" matSuffix>insert_emoticon</mat-icon>
+            <mat-hint align="end">{{inputpreview.value?.length || 0}}/90</mat-hint>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+
+        </td>
+      </tr>
+      <tr *ngIf="showemoji">
+        <td>
+          <div style="width: 100%;
+          height: 100%;
+          position: absolute;
+          top: 8;
+          left: 12;
+          z-index: 20;">
+            <emoji-mart (emojiClick)="setemoji($event)" set="emojione"></emoji-mart>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+  
+
+    <div class="template-container" *ngFor="let section of mailtemplateArray; let i1 = index" 
+    [ngStyle]="sectionStyleArray[i1].style" [fxLayout]=sectionStyleArray[i1].boxalignment 
+    [class.fullwidthsection]="sectionStyleArray[i1].style['full-width'] === 'full-width'">
+    <div *ngIf="sectionStyleArray[i1].imgblur" [class.imgblursection]="sectionStyleArray[i1].imgblur" [style.background-image]= "sectionStyleArray[i1].style['background-image']" 
+    style="background-size: 100%; background-repeat: no-repeat;" [ngStyle]="sectionStyleArray[i1].style" style="margin-right: 15px;"></div>
+      <!-- cdkDropList #listSection="cdkDropList" (cdkDropListDropped)="drop($event, i1, i2)" [cdkDropListData]="mailtemplateArray" -->
+      <label class="sectionlabel">Section 
+        <mat-icon matTooltip="save to profile" (click)="onSaveSectionPart(i1)" class="iconsize-10 sectionlabelbuttons" matSuffix>save</mat-icon>
+        <mat-icon matTooltip="edit section" (click)="onSelectSectionPart(i1)" class="iconsize-10 sectionlabelbuttons" matSuffix>mode_edit</mat-icon>
+        <mat-icon matTooltip="up" (click)="moveSectionUp(i1)" class="iconsize-10 sectionlabelbuttons" matSuffix>arrow_drop_up</mat-icon>
+        <mat-icon matTooltip="down" (click)="moveSectionDown(i1)" class="iconsize-10 sectionlabelbuttons" matSuffix>arrow_drop_down</mat-icon>
+        <mat-icon matTooltip="delete" (click)="onDeleteSectionPart(i1)" class="sectionlabelbuttons iconsize-10" matSuffix>delete</mat-icon>
+    </label>
+      <div class="section-box full-width-item" *ngFor="let column of section; let i2 = index"
+        fxLayout="column">
+          <div [ngStyle]="columnStyleArray[i1][i2].style" class="column-box" cdkDropList
+            #mailtemplateList="cdkDropList" [cdkDropListData]="mailtemplateArray[i1][i2]"
+            (cdkDropListDropped)="drop($event, i1, i2)">
+            <label class="columnlabel">Column 
+              <mat-icon (click)="onSelectColumnPart(i1, i2)" class="iconsize-10 sectionlabelbuttons" matSuffix>mode_edit</mat-icon>
+              <mat-icon (click)="onDeleteColumnPart(i1, i2)" class="iconsize-10 sectionlabelbuttons" matSuffix>delete</mat-icon>
+            </label>
+            <div class="item-box" *ngFor="let item of column; let i3 = index;" (click)="onSelectTemplatePart(item, i1, i2, i3)"
+              cdkDrag [fxLayoutAlign]="columnStyleArray[i1][i2].setflexalign">
+              <div *ngIf="item.type === 'Text'" (click)="onSelectTemplatePart(item, i1, i2, i3)"  (click)="openDialog()" class="full-width-item">
+                <div  [innerHTML]="item.content | safeHtml"></div>
+                <mat-icon class="textbox-edit-button" class="iconsize-10 text-edit-icon"
+                  (click)="openDialog()">mode_edit</mat-icon>
+              </div>
+              <div *ngIf="item.type === 'Image'" class="full-width-item">
+                <app-fileupload *ngIf="item.url.length < 1" [account]="account" [option]="option"
+                  (imgurl)="setimgurl($event, i1, i2, i3)">
+                </app-fileupload>
+                <img *ngIf="item.url.length > 0" src={{item.url}} [ngStyle]="item.style"  [class.imggreyclass]="item.imggrey">
+              </div>
+              <div *ngIf="item.type === 'Divider'" [ngStyle]="item.style" class="full-width-item">
+              </div>
+              <div *ngIf="item.type === 'Accordion'" [ngStyle]="item.style" class="full-width-item">
+                <mat-accordion>
+                  <div *ngFor="let elementAccordion of item.elements">
+                    <mat-expansion-panel>
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                          {{elementAccordion.title.content}}
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      {{elementAccordion.text.content}}
+                    </mat-expansion-panel>
+                  </div>
+                </mat-accordion>
+              </div>
+              <div *ngIf="item.type === 'Carousel'" [ngStyle]="item.style" class="full-width-item">
+                <div class="slideshow-container">
+                  <div *ngFor="let image of item.images">
+                    <img class="mySlides fade" *ngIf="image.style.src" src={{image.style.src}} style="width:100%">
+                  </div>
+                  <img (click)="plusSlides(-1)" src={{item.style[right-icon]}}>
+                  <img (click)="plusSlides(1)" src={{item.style[left-icon]}}>
+                  <div *ngFor="let imagethumb of item.images; let i = index" style="display: inline-block;">
+                    <img *ngIf="imagethumb.style.src" (click)="currentSlide(i)" src={{imagethumb.style.src}}
+                      class="thumbnails">
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="item.type === 'Social'"  class="full-width-item">
+                <div class="social-container" [ngStyle]="item.style">
+                  <div *ngFor="let socialelement of item.elements" [style.text-align]=item.style.align
+                    [ngClass]="{ verticalSocial: item.style.mode === 'horizontal', horizontalSocial: item.style.mode === 'vertical' }">
+                    <img src={{socialelement.iconlocation}} [style.width]="socialelement.style['icon-size']">
+                    <label [style.padding]="socialelement.style.padding" [ngStyle]="socialelement.style" (click)="onSelectTemplatePart(item, i1, i2, i3)">{{socialelement.content}}</label>
+                  </div>
+                </div>
+              </div>
+              <!--create dynamic flex-start  flex-end space-around center-->
+              <div *ngIf="item.type === 'Button'" class="full-width-item">
+                <button (click)="onSelectTemplatePart(item, i1, i2, i3)" [ngStyle]="item.style">{{item.buttontext}}</button>
+              </div>
+              <div *ngIf="item.type === 'Footer'" (click)="onSelectTemplatePart(item, i1, i2, i3)" class="full-width-item">
+
+                <p [ngStyle]="item.style" [innerHTML]="item.content"></p>
+              </div>
+              <mat-icon (click)="onDeleteItemPart(i1, i2, i3)" class="iconsize-10 icon-label" matSuffix>delete
+              </mat-icon>
+            </div>
+          </div>
+       
+      </div>
+      <div  style="background-color: rgba(250, 250, 250, 1);">
+      <mat-icon matTooltip="Add column" style="float: right;" (click)="addToSectionArray(i1)">add</mat-icon>
+    </div>
+    </div>
+    <mat-icon matTooltip="Add sections" (click)="addToMailTemplateArray()">add</mat-icon>
+  
+  </div>
+
+  <mat-card fxFlex="10%" class="edit">
+
+    <div *ngIf="Column">Edit Column
+      <table>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]=maileditorColumn.style.width type="text" matInput placeholder="width">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+              <mat-hint>%/px</mat-hint>
+            </mat-form-field>
+          </td>
+        </tr>
+
+        <tr fxLayout="row">                    
+            <span style="width: 50px; margin: 10px;"><mat-icon>border_top</mat-icon></span>                
+            <span style="width: 50px; margin: 10px;"><mat-icon>border_right</mat-icon></span>                  
+            <span style="width: 50px; margin: 10px;"><mat-icon>border_bottom</mat-icon></span>
+            <span style="width: 50px; margin: 10px;"><mat-icon>border_left</mat-icon></span>                    
+        </tr>
+        <tr fxLayout="row"> 
+            <mat-form-field style="max-width: 46px;">
+              <input [(ngModel)]="selectedPadding['padding-top']" type="number" matInput (change)="onChangePadding(maileditorColumn, 'padding-top');">
+              <mat-hint>px</mat-hint>
+            </mat-form-field>
+          
+            <mat-form-field style="max-width: 46px;">
+              <input [(ngModel)]="selectedPadding['padding-right']" type="number" matInput (change)="onChangePadding(maileditorColumn, 'padding-right');">
+              <mat-hint>px</mat-hint>
+            </mat-form-field>
+          
+            <mat-form-field style="max-width: 46px;">
+              <input  [(ngModel)]="selectedPadding['padding-bottom']" type="number" matInput (change)="onChangePadding(maileditorColumn, 'padding-bottom');">
+              <mat-hint>px</mat-hint>
+            </mat-form-field>
+          
+            <mat-form-field style="max-width: 46px;">
+              <input  [(ngModel)]="selectedPadding['padding-left']" type="number" matInput (change)="onChangePadding(maileditorColumn, 'padding-left');">
+              <mat-hint>px</mat-hint>
+            </mat-form-field>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <mat-select [(value)]="maileditorColumn.style['vertical-align']" placeholder="Vertical align"
+                (selectionChange)="changeverticalalign($event)">
+                <mat-option value="middle">middle</mat-option>
+                <mat-option value="top">top</mat-option>
+                <mat-option value="bottom">bottom</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </tr>
+
+
+
+        <tr>
+          <td>
+            <mat-accordion>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Select Background Color
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <br>
+                <span [style.background]="maileditorColumn.style['background-color']" [cpToggle]="true"
+                  [cpDialogDisplay]="'inline'" [cpCancelButton]="true"
+                  [(colorPicker)]="maileditorColumn.style['background-color']"></span>
+                <table matTooltip="click to set color">
+                  <tr>
+                    <td>Primairy color</td>
+                    <td (click)="maileditorColumn.style['background-color'] = company.companyprimairycolor">
+                        {{company.companyprimairycolor}}</td>
+                  </tr>
+                  <tr>
+                      <td>Secondairy color</td>
+                    <td (click)="maileditorColumn.style['background-color'] = company.companysecondarycolor">
+                      {{company.companysecondarycolor}}</td>
+                  </tr>
+                  <tr>
+                      <td>Relation primairy color</td>
+                    <td (click)="maileditorColumn.style['background-color'] = option.companyprimairycolor">
+                      {{option.companyprimairycolor}}</td>
+                  </tr>
+                  <tr>
+                      <td>Relation secondairy color</td>
+                    <td (click)="maileditorColumn.style['background-color'] = option.companysecondarycolor">
+                      {{option.companysecondarycolor}}</td>
+                  </tr>
+                </table>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+        </tr>
+        <tr>
+          <td>
+
+          </td>
+        </tr>
+        <tr>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]=maileditorColumn.style.margin type="text" matInput placeholder="margin">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+              <mat-hint>%/px</mat-hint>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="selectedborder.width" type="number" matInput placeholder="border width"
+                (change)="onChangeBorder(maileditorColumn)">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+              <mat-hint>px</mat-hint>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <mat-select [(value)]="selectedborder.style" placeholder="style"
+                (selectionChange)="onChangeBorder(maileditorColumn)">
+                <mat-option value="none">None</mat-option>
+                <mat-option value="solid">Solid</mat-option>
+                <mat-option value="dotted">Dotted</mat-option>
+                <mat-option value="dashed">Dashed</mat-option>
+                <mat-option value="double">Double</mat-option>
+                <mat-option value="groove">Groove</mat-option>
+                <mat-option value="ridge">Ridge</mat-option>
+                <mat-option value="inset">Inset</mat-option>
+                <mat-option value="outset">Outset</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-accordion>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Border Color
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <br>
+                <span [style.background]="selectedborder.color" [cpToggle]="true" [cpDialogDisplay]="'inline'"
+                  [cpCancelButton]="true" [(colorPicker)]="selectedborder.color"></span>
+                <button mat-button (click)="onChangeBorder(maileditorColumn)">confirm</button>
+                <table matTooltip="click to set color">
+                  <tr>
+                    <td>Primairy color</td>
+                    <td>Secondairy color</td>
+                  </tr>
+                  <tr>
+                    <td (click)="selectedborder.color = company.companyprimairycolor">{{company.companyprimairycolor}}
+                    </td>
+                    <td (click)="selectedborder.color = company.companysecondarycolor">{{company.companysecondarycolor}}
+                    </td>
+                  </tr>
+                </table>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div *ngIf="Section" class="edit_table">Edit Section
+      <table>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]=maileditorSection.style.padding type="text" matInput placeholder="padding">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+              <mat-hint>%/px</mat-hint>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+              <mat-slide-toggle [(ngModel)]='fullwidth'
+              (change)="changefullwidthSection()">Full width</mat-slide-toggle>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-slide-toggle [(ngModel)]="columnverticalalign" (change)="setcolumnverticalalign(maileditorSection)">Align Vertical </mat-slide-toggle>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-accordion>
+              <mat-expansion-panel style="width: 270px;">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Select Background Color
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <br>
+                <!-- <span ((ngModelChange)="detectchange()" [style.background]="maileditorSection.style['background-color']" [cpToggle]="true"
+                  [cpDialogDisplay]="'inline'" [cpCancelButton]="true"
+                  [(colorPicker)]="maileditorSection.style['background-color']"></span> -->
+                  <input (colorPickerChange)="detectchange()" [(colorPicker)]="maileditorSection.style['background-color']" [style.background]="color"/>
+                <table matTooltip="click to set color">
+                  <tr>
+                    <td>Primairy color</td>
+                    <td (click)="maileditorSection.style['background-color'] = company.companyprimairycolor">
+                        {{company.companyprimairycolor}}</td>
+                  </tr>
+                  <tr>
+                      <td>Secondairy color</td>
+                    <td (click)="maileditorSection.style['background-color'] = company.companysecondarycolor">
+                      {{company.companysecondarycolor}}</td>
+                  </tr>
+                  <tr>
+                      <td>Relation primairy color</td>
+                    <td (click)="maileditorSection.style['background-color'] = option.companyprimairycolor">
+                      {{option.companyprimairycolor}}</td>
+                  </tr>
+                  <tr>
+                      <td>Relation secondairy color</td>
+                    <td (click)="maileditorSection.style['background-color'] = option.companysecondarycolor">
+                      {{option.companysecondarycolor}}</td>
+                  </tr>
+                </table>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+        </tr>
+        <tr>
+          <td>
+              <mat-accordion>
+                  <mat-expansion-panel style="width: 270px;">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                        Select Background Image
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+             
+                    <div *ngIf="maileditorSection.style['background-url']">
+              <img [src]="maileditorSection.style['background-url']" class="carouselimages">
+              <mat-icon (click)="maileditorSection.style['background-url'] = ''; maileditorSection.style['background-image'] =''" class="icon-label" class="iconsize-12">
+                delete</mat-icon>
+            </div>
+            <app-fileupload *ngIf="!maileditorSection.style['background-url']" [account]="account" [option]="option"
+              (imgurl)="setbackgroundImageSection($event)">
+            </app-fileupload>
+       
+            <mat-form-field>
+              <input [(ngModel)]="maileditorSection.style['background-url']" type="text" matInput
+                placeholder="Image url">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+            </mat-form-field>
+       
+              <mat-slide-toggle (change)="setbackgroundImageSection(maileditorSection.style['background-url'], maileditorSection.imggrey, maileditorSection.imgblur)" [(ngModel)]="maileditorSection.imggrey">Greyscale</mat-slide-toggle>
+        
+              <mat-slide-toggle (change)="setbackgroundImageSection(maileditorSection.style['background-url'], maileditorSection.imggrey, maileditorSection.imgblur)" [(ngModel)]="maileditorSection.imgblur">Blur</mat-slide-toggle>
+        
+            <mat-form-field>
+              <input [(ngModel)]="maileditorSection.style['background-size']" type="text" matInput
+                placeholder="Background size">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+              <mat-hint>%/px</mat-hint>
+            </mat-form-field>
+            <mat-slide-toggle [(ngModel)]="backgroundrepeat" (change)="togglebackgroundrepeat()">Background Image Repeat</mat-slide-toggle>
+     
+      </mat-expansion-panel>
+    </mat-accordion>
+    </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="selectedborder.width" type="number" matInput placeholder="border width"
+                (change)="onChangeBorder(maileditorSection)">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+              <mat-hint>px</mat-hint>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <mat-select [(value)]="selectedborder.style" placeholder="style"
+                (selectionChange)="onChangeBorder(maileditorSection)">
+                <mat-option value="none">None</mat-option>
+                <mat-option value="solid">Solid</mat-option>
+                <mat-option value="dotted">Dotted</mat-option>
+                <mat-option value="dashed">Dashed</mat-option>
+                <mat-option value="double">Double</mat-option>
+                <mat-option value="groove">Groove</mat-option>
+                <mat-option value="ridge">Ridge</mat-option>
+                <mat-option value="inset">Inset</mat-option>
+                <mat-option value="outset">Outset</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-accordion>
+              <mat-expansion-panel style="width: 270px;">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Border Color
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <br>
+                <span [style.background]="selectedborder.color" [cpToggle]="true" [cpDialogDisplay]="'inline'"
+                  [cpCancelButton]="true" [(colorPicker)]="selectedborder.color"></span>
+                <table matTooltip="click to set color">
+                  <tr>
+                    <td>Primairy color</td>
+                    <td>Secondairy color</td>
+                  </tr>
+                  <tr>
+                    <td (click)="selectedborder.color = company.companyprimairycolor">{{company.companyprimairycolor}}
+                    </td>
+                    <td (click)="selectedborder.color = company.companysecondarycolor">{{company.companysecondarycolor}}
+                    </td>
+                  </tr>
+                </table>
+                <button mat-button (click)="onChangeBorder(maileditorSection)">confirm</button>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <mat-select [(value)]="maileditorSection.style['text-align']" placeholder="Vertical align">
+                <mat-option value="left">left</mat-option>
+                <mat-option value="center">center</mat-option>
+                <mat-option value="right">right</mat-option>
+                <mat-option value="justify">justify</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+
+    <div *ngIf="Image" class="edit_table" fxLayout="row wrap">Edit Image
+      <table>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorImage.style.width" type="text" matInput placeholder="width">
+              <label matSuffix>px/%</label>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-slide-toggle [(ngModel)]="maileditorImage.style['fluid-on-mobile']">Fluid size on mobile devices</mat-slide-toggle>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorImage.style.height" type="text" matInput placeholder="height">
+              <label matSuffix>px/%</label>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+              <mat-slide-toggle [(ngModel)]="maileditorImage.imggrey">Greyscale</mat-slide-toggle>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorImage.style.href" type="text" matInput placeholder="link to website">
+            </mat-form-field>
+          </td>
+        </tr>
+            <tr>
+                Padding
+              </tr>
+              <tr fxLayout="row">                    
+                <span style="width: 50px; margin: 10px;"><mat-icon>border_top</mat-icon></span>                
+                <span style="width: 50px; margin: 10px;"><mat-icon>border_right</mat-icon></span>                  
+                <span style="width: 50px; margin: 10px;"><mat-icon>border_bottom</mat-icon></span>
+                <span style="width: 50px; margin: 10px;"><mat-icon>border_left</mat-icon></span>                    
+            </tr>
+            <tr fxLayout="row"> 
+                <mat-form-field style="max-width: 46px;">
+                  <input [(ngModel)]="selectedPadding['padding-top']" type="number" matInput (change)="onChangePadding(maileditorImage, 'padding-top');">
+                  <mat-hint>px</mat-hint>
+                </mat-form-field>
+              
+                <mat-form-field style="max-width: 46px;">
+                  <input [(ngModel)]="selectedPadding['padding-right']" type="number" matInput (change)="onChangePadding(maileditorImage, 'padding-right');">
+                  <mat-hint>px</mat-hint>
+                </mat-form-field>
+              
+                <mat-form-field style="max-width: 46px;">
+                  <input  [(ngModel)]="selectedPadding['padding-bottom']" type="number" matInput (change)="onChangePadding(maileditorImage, 'padding-bottom');">
+                  <mat-hint>px</mat-hint>
+                </mat-form-field>
+              
+                <mat-form-field style="max-width: 46px;">
+                  <input  [(ngModel)]="selectedPadding['padding-left']" type="number" matInput (change)="onChangePadding(maileditorImage, 'padding-left');">
+                  <mat-hint>px</mat-hint>
+                </mat-form-field>
+            </tr>
+            <tr>
+                <td>
+                  <mat-form-field>
+                    <mat-select [(value)]="maileditorImage.style['align']" placeholder="Align"
+                      (selectionChange)="changetextalign(maileditorImage.style['align'])">
+                      <mat-option value="left">left</mat-option>
+                      <mat-option value="center">center</mat-option>
+                      <mat-option value="right">right</mat-option>
+                      <mat-option value="justify">justify</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </td>
+              </tr>
+      </table>
+    </div>
+
+    <div *ngIf="Divider">Edit Divider
+      <table>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorDivider.style['border-width']" type="text" matInput
+                placeholder="Border Width">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+              <mat-hint>%/px</mat-hint>
+            </mat-form-field>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorDivider.style.width" type="text" matInput placeholder="height">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+              <mat-hint>%/px</mat-hint>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-accordion>
+              <mat-expansion-panel style="width: 270px;">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Border Color
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <br>
+                <span [style.background]="maileditorDivider.style['border-color']" [cpToggle]="true" [cpDialogDisplay]="'inline'"
+                  [cpCancelButton]="true" [(colorPicker)]="maileditorDivider.style['border-color']"></span>
+                <table matTooltip="click to set color">
+                  <tr>
+                    <td>Secondairy color</td>
+                  </tr>
+                  <tr>
+                    <td (click)="maileditorDivider.style['border-color'] = company.companyprimairycolor">{{company.companyprimairycolor}}
+                    </td>
+                    <td (click)="maileditorDivider.style['border-color'] = company.companysecondarycolor">{{company.companysecondarycolor}}
+                    </td>
+                  </tr>
+                </table>
+                <button mat-button (click)="onChangeBorder(maileditorDivider)">confirm</button>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+        </tr>
+        <tr>
+          Padding
+        </tr>
+        <tr fxLayout="row">                    
+          <span style="width: 50px; margin: 10px;"><mat-icon>border_top</mat-icon></span>                
+          <span style="width: 50px; margin: 10px;"><mat-icon>border_right</mat-icon></span>                  
+          <span style="width: 50px; margin: 10px;"><mat-icon>border_bottom</mat-icon></span>
+          <span style="width: 50px; margin: 10px;"><mat-icon>border_left</mat-icon></span>                    
+      </tr>
+      <tr fxLayout="row"> 
+          <mat-form-field style="max-width: 46px;">
+            <input [(ngModel)]="selectedPadding['padding-top']" type="number" matInput (change)="onChangePadding(maileditorDivider, 'padding-top');">
+            <mat-hint>px</mat-hint>
+          </mat-form-field>
+        
+          <mat-form-field style="max-width: 46px;">
+            <input [(ngModel)]="selectedPadding['padding-right']" type="number" matInput (change)="onChangePadding(maileditorDivider, 'padding-right');">
+            <mat-hint>px</mat-hint>
+          </mat-form-field>
+        
+          <mat-form-field style="max-width: 46px;">
+            <input  [(ngModel)]="selectedPadding['padding-bottom']" type="number" matInput (change)="onChangePadding(maileditorDivider, 'padding-bottom');">
+            <mat-hint>px</mat-hint>
+          </mat-form-field>
+        
+          <mat-form-field style="max-width: 46px;">
+            <input  [(ngModel)]="selectedPadding['padding-left']" type="number" matInput (change)="onChangePadding(maileditorDivider, 'padding-left');">
+            <mat-hint>px</mat-hint>
+          </mat-form-field>
+      </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <mat-select [(value)]="maileditorDivider.style['border-style']" placeholder="style">
+                <mat-option value="none">None</mat-option>
+                <mat-option value="solid">Solid</mat-option>
+                <mat-option value="dotted">Dotted</mat-option>
+                <mat-option value="dashed">Dashed</mat-option>
+                <mat-option value="double">Double</mat-option>
+                <mat-option value="groove">Groove</mat-option>
+                <mat-option value="ridge">Ridge</mat-option>
+                <mat-option value="inset">Inset</mat-option>
+                <mat-option value="outset">Outset</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div *ngIf="Button">Edit Button
+      <br>
+      <table>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorButton.buttontext" type="text" matInput placeholder="Button Text">
+              <mat-icon matTooltip="select Emoji" (click)="onshowemojiButton()" matSuffix>insert_emoticon</mat-icon>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr *ngIf="showemojibutton">
+          <td>
+            <div style="width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 8;
+            left: 20;
+            z-index: 20;">
+              <emoji-mart (emojiClick)="setemojibutton($event)" set="emojione"></emoji-mart>
+            </div>
+          </td>
+        </tr>
+        <tr>
+            <td>
+              <mat-form-field>
+                <input [(ngModel)]="maileditorButton.style.height" type="text" matInput placeholder="Height">
+                <mat-icon matSuffix>mode_edit</mat-icon>
+              </mat-form-field>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <mat-form-field>
+                <input [(ngModel)]="maileditorButton.style.width" type="text" matInput placeholder="Width">
+                <mat-icon matSuffix>mode_edit</mat-icon>
+              </mat-form-field>
+            </td>
+          </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <mat-label>Select font</mat-label>
+              <mat-select [(value)]="maileditorButton.style['font-family']">
+                <mat-option>None</mat-option>
+                <mat-option value="Arial, Helvetica, sans-serif">Arial</mat-option>
+                <mat-option value="'Arial Black', Gadget, sans-serif">Arial Black</mat-option>
+                <mat-option value="Tahoma, Geneva, sans-serif">Tahoma</mat-option>
+                <mat-option value="'Times New Roman', Times, serif">Times New Roman</mat-option>
+                <mat-option value="Roboto">Roboto</mat-option>
+                <mat-option value="Open Sans">Open Sans</mat-option>
+                <mat-option value="Baloo Bhai">Baloo Bhai</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <table matTooltip="click to set font">
+              <tr>
+                <td>company font</td>
+              </tr>
+              <tr>
+                <td (click)="maileditorButton.style['font-family'] = company.companyfont">
+                  {{company.companyfont}}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorButton.url" type="text" matInput placeholder="Button URL">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-accordion>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Background Color
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <br>
+                <span [style.background]="maileditorButton.style['background-color']" [cpToggle]="true"
+                  [cpDialogDisplay]="'inline'" [cpCancelButton]="true"
+                  [(colorPicker)]="maileditorButton.style['background-color']"></span>
+                <table matTooltip="click to set color">
+                  <tr>
+                    <td>Primairy color</td>
+                    <td (click)="maileditorButton.style['background-color'] = company.companyprimairycolor">
+                        {{company.companyprimairycolor}}</td>
+                  </tr>
+                  <tr>
+                    <td>Secondairy color</td>
+                    <td (click)="maileditorButton.style['background-color'] = company.companysecondarycolor">
+                      {{company.companysecondarycolor}}</td>
+                  </tr>
+                </table>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-accordion>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Text Color
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <br>
+                <span [style.background]="maileditorButton.style.color" [cpToggle]="true" [cpDialogDisplay]="'inline'"
+                  [cpCancelButton]="true" [(colorPicker)]="maileditorButton.style.color"></span>
+                <table matTooltip="click to set color">
+                  <tr>
+                    <td>Primairy color</td>
+                    <td (click)="maileditorButton.style.color = company.companyprimairycolor">
+                        {{company.companyprimairycolor}}</td>
+                  </tr>
+                  <tr>
+                      <td>Secondairy color</td>
+                    <td (click)="maileditorButton.style.color = company.companysecondarycolor">
+                      {{company.companysecondarycolor}}</td>
+                  </tr>
+                </table>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorButton.style['border-radius']" type="text" matInput
+                placeholder="Border Radius">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="selectedborder.width" type="number" matInput placeholder="border width"
+                (change)="onChangeBorder(maileditorButton)">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+              <mat-hint>px</mat-hint>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <mat-select [(value)]="selectedborder.style" placeholder="style"
+                (selectionChange)="onChangeBorder(maileditorButton)">
+                <mat-option value="none">None</mat-option>
+                <mat-option value="solid">Solid</mat-option>
+                <mat-option value="dotted">Dotted</mat-option>
+                <mat-option value="dashed">Dashed</mat-option>
+                <mat-option value="double">Double</mat-option>
+                <mat-option value="groove">Groove</mat-option>
+                <mat-option value="ridge">Ridge</mat-option>
+                <mat-option value="inset">Inset</mat-option>
+                <mat-option value="outset">Outset</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-accordion>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Border Color
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <br>
+                <span [style.background]="selectedborder.color" [cpToggle]="true" [cpDialogDisplay]="'inline'"
+                  [cpCancelButton]="true" [(colorPicker)]="selectedborder.color"></span>
+                <table matTooltip="click to set color">
+                  <tr>
+                    <td>Primairy color</td>
+                    <td>Secondairy color</td>
+                  </tr>
+                  <tr>
+                    <td (click)="selectedborder.color = company.companyprimairycolor">{{company.companyprimairycolor}}
+                    </td>
+                    <td (click)="selectedborder.color = company.companysecondarycolor">{{company.companysecondarycolor}}
+                    </td>
+                  </tr>
+                </table>
+                <button mat-button (click)="onChangeBorder(maileditorButton)">confirm</button>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+        </tr>
+        <tr>
+            <td>
+              <mat-form-field>
+                <mat-select [(value)]="maileditorButton.style['text-align']" placeholder="Text align">
+                  <mat-option value="left">left</mat-option>
+                  <mat-option value="center">center</mat-option>
+                  <mat-option value="right">right</mat-option>
+                  <mat-option value="justify">justify</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+          </tr>
+          <tr>
+              <td>
+                <mat-form-field>
+                  <mat-select [(value)]="maileditorButton.style['align']" placeholder="Horizontal align"
+                  (selectionChange)="changetextalign(maileditorButton.style['align'])">
+                    <mat-option value="left">left</mat-option>
+                    <mat-option value="center">center</mat-option>
+                    <mat-option value="right">right</mat-option>
+                    <mat-option value="justify">justify</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </td>
+            </tr>
+      </table>
+    </div>
+
+    <div *ngIf="Carousel" class="edit_table" fxLayout="row wrap">Edit Carousel
+      <table>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorCarousel.style.width" type="text" matInput placeholder="width">
+              <label matSuffix>px/%</label>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorCarousel.style.height" type="text" matInput placeholder="height">
+              <label matSuffix>px/%</label>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div *ngFor="let image of maileditorCarousel.images; let i = index">
+              <div *ngIf="image.style.src">
+                <img src={{image.style.src}} class="carouselimages">
+                <mat-icon (click)="image.style.src = ''" class="icon-label" class="iconsize-12">delete</mat-icon>
+              </div>
+              <app-fileupload *ngIf="!image.style.src" [account]="account" [option]="option"
+                (imgurl)="setCarouselImage($event, i)">
+              </app-fileupload>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-icon (click)="addImageToCarouselArray()">add</mat-icon>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div *ngIf="Accordion" class="edit_table" fxLayout="row wrap">Edit Accordion
+      <table>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorAccordion.style.width" type="text" matInput placeholder="width">
+              <label matSuffix>px/%</label>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorAccordion.style.height" type="text" matInput placeholder="height">
+              <label matSuffix>px/%</label>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div *ngFor="let elementAcc of maileditorAccordion.elements">
+              <mat-form-field>
+                <input [(ngModel)]="elementAcc.title.content" type="text" matInput placeholder="Title">
+              </mat-form-field>
+              <mat-form-field>
+                <input [(ngModel)]="elementAcc.text.content" type="text" matInput placeholder="Text">
+              </mat-form-field>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <mat-icon (click)="addElementToAccordionArray()">add</mat-icon>
+        </tr>
+      </table>
+    </div>
+
+    <div *ngIf="Social" class="edit_table">Edit Social Media
+           
+        <speed-dial-fab matTooltip="Add social media link" class="speed-dial-container" [ngClass]="speedDialFabPosition" [reverse-column-direction]="false"
+        (fabClick)="onSpeedDialFabClicked($event)" [buttons]="speedDialFabButtons">
+      </speed-dial-fab>
+       
+            <mat-form-field>
+              <mat-select [(value)]="maileditorSocial.style.mode" placeholder="Direction Icons">
+                <mat-option value="horizontal">horizontal</mat-option>
+                <mat-option value="vertical">vertical</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+              
+                    <mat-form-field>
+                      <mat-select [(value)]="maileditorSocial.style['align']" placeholder="Align"
+                        (selectionChange)="changetextalign(maileditorSocial.style['align'])">
+                        <mat-option value="left">left</mat-option>
+                        <mat-option value="center">center</mat-option>
+                        <mat-option value="right">right</mat-option>
+                        <mat-option value="justify">justify</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+  
+              <mat-accordion>
+            <div *ngFor="let socialelement of maileditorSocial.elements; let i = index;">            
+                <mat-expansion-panel style="max-width: 270px;" [expanded]="onSelectPadding(socialelement)">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <table>
+                        <tr>
+                          <td><img src={{socialelement.iconlocation}} style="width: 20px;"></td>
+                          <td> Social link: {{socialelement.style.name}}</td>
+                        </tr>
+                      </table>
+                     
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+
+
+                  <table>
+                  <tr>
+                  <mat-form-field style="max-width: 200px;">
+                    <input [(ngModel)]="socialelement.content" type="text" matInput placeholder="Title">
+                  </mat-form-field>
+                </tr>
+                <tr>
+                  <mat-form-field style="max-width: 200px;">
+                    <input [(ngModel)]="socialelement.style.href" type="text" matInput placeholder="Link to company page ">
+                  </mat-form-field>
+                </tr>
+                <!-- <tr>
+                  <mat-form-field style="max-width: 200px;">
+                    <input [(ngModel)]=socialelement.style.padding type="text" matInput placeholder="padding">
+                    <mat-icon matSuffix>mode_edit</mat-icon>
+                    <mat-hint>px</mat-hint>
+                  </mat-form-field>
+                </tr> -->
+    
+                 
+                    <tr fxLayout="row">                    
+                        <span style="width: 50px; margin: 10px;"><mat-icon>border_top</mat-icon></span>                
+                        <span style="width: 50px; margin: 10px;"><mat-icon>border_right</mat-icon></span>                  
+                        <span style="width: 50px; margin: 10px;"><mat-icon>border_bottom</mat-icon></span>
+                        <span style="width: 50px; margin: 10px;"><mat-icon>border_left</mat-icon></span>                    
+                    </tr>
+                    <tr fxLayout="row"> 
+                        <mat-form-field style="max-width: 46px;">
+                          <input [(ngModel)]="selectedPadding['padding-top']" type="number" matInput (change)="onChangePadding(socialelement, 'padding-top');">
+                          <mat-hint>px</mat-hint>
+                        </mat-form-field>
+                      
+                        <mat-form-field style="max-width: 46px;">
+                          <input  [(ngModel)]="selectedPadding['padding-right']" type="number" matInput (change)="onChangePadding(socialelement, 'padding-right');">
+                          <mat-hint>px</mat-hint>
+                        </mat-form-field>
+                      
+                        <mat-form-field style="max-width: 46px;">
+                          <input  [(ngModel)]="selectedPadding['padding-bottom']" type="number" matInput (change)="onChangePadding(socialelement, 'padding-bottom');">
+                          <mat-hint>px</mat-hint>
+                        </mat-form-field>
+                      
+                        <mat-form-field style="max-width: 46px;">
+                          <input  [(ngModel)]="selectedPadding['padding-left']" type="number" matInput (change)="onChangePadding(socialelement, 'padding-left');">
+                          <mat-hint>px</mat-hint>
+                        </mat-form-field>
+                    </tr>
+ 
+                    <tr>
+                        <td>
+                          <mat-accordion>
+                            <mat-expansion-panel>
+                              <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                  Select font color
+                                </mat-panel-title>
+                              </mat-expansion-panel-header>
+                              <br>
+                              <span [style.background]="socialelement.style.color" [cpToggle]="true"
+                                [cpDialogDisplay]="'inline'" [cpCancelButton]="true"
+                                [(colorPicker)]="socialelement.style.color"></span>
+                              <table matTooltip="click to set color">
+                                <tr>
+                                  <td>Primairy color</td>
+                                  <td>Secondairy color</td>
+                                </tr>
+                                <tr>
+                                  <td (click)="socialelement.style.color = company.companyprimairycolor">
+                                    {{company.companyprimairycolor}}</td>
+                                  <td (click)="socialelement.style.color = company.companysecondarycolor">
+                                    {{company.companysecondarycolor}}</td>
+                                </tr>
+                              </table>
+                            </mat-expansion-panel>
+                          </mat-accordion>
+                        </td>
+                      </tr>
+                
+                    <tr>
+                  <mat-form-field style="max-width: 200px;">
+                    <input [(ngModel)]="socialelement.style['icon-size']" type="text"
+                      (change)="socialelement.style['icon-height'] = socialelement.style['icon-size']" matInput
+                      placeholder="Icon Height">
+                    <mat-icon matSuffix>mode_edit</mat-icon>
+                    <mat-hint>%/px</mat-hint>
+                  </mat-form-field>
+                </tr>
+                  <!-- <mat-form-field>
+                    <mat-select [(value)]="socialelement.style.name" placeholder="Socialnetwork"
+                      (selectionChange)="onChangeSocial(maileditorSocial, i)">
+                      <mat-option value="facebook">facebook</mat-option>
+                      <mat-option value="twitter">twitter</mat-option>
+                      <mat-option value="pinterest">pinterest</mat-option>
+                      <mat-option value="linkedin">linkedin</mat-option>
+                      <mat-option value="tumblr">tumblr</mat-option>
+                      <mat-option value="xing">xing</mat-option>
+                      <mat-option value="github">github</mat-option>
+                      <mat-option value="instagram">instagram</mat-option>
+                      <mat-option value="web">web</mat-option>
+                      <mat-option value="snapchat">snapchat</mat-option>
+                      <mat-option value="youtube">youtube</mat-option>
+                      <mat-option value="vimeo">vimeo</mat-option>
+                    </mat-select>
+                  </mat-form-field>  -->
+                  <tr>
+                  <!-- <mat-form-field style="max-width: 200px;">
+                    <mat-select [(value)]="socialelement.style.mode" placeholder="Direction Icons">
+                      <mat-option value="horizontal">horizontal</mat-option>
+                      <mat-option value="vertical">vertical</mat-option>
+                    </mat-select>
+                  </mat-form-field> -->
+                  <mat-icon matTooltip="delete" (click)="deletesocial(i)">delete</mat-icon>
+                </tr>
+                </table>
+                </mat-expansion-panel>
+              
+            </div>
+          </mat-accordion>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorSocial.style.width" type="text" matInput placeholder="width">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+              <mat-hint>%/px</mat-hint>
+            </mat-form-field>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorSocial.style.height" type="text" matInput placeholder="height">
+              <mat-icon matSuffix>mode_edit</mat-icon>
+              <mat-hint>%/px</mat-hint>
+            </mat-form-field>
+
+    </div>
+
+    <div *ngIf="Footer" class="edit_table">Edit Footer
+      <table style="width: 100%;">
+        <tr>
+          <td>
+            <mat-form-field style="width: 90%;">
+              <textarea style="width: 90%;" [(ngModel)]="maileditorFooter.content" [matTextareaAutosize] type="text"
+                matInput placeholder="Footer Text"></textarea>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <input [(ngModel)]="maileditorFooter.style['font-size']" type="text" matInput placeholder="font size">
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-accordion>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Background Color
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <br>
+                <span [style.background]="maileditorFooter.style['color']" [cpToggle]="true"
+                  [cpDialogDisplay]="'inline'" [cpCancelButton]="true"
+                  [(colorPicker)]="maileditorFooter.style['color']"></span>
+                <table matTooltip="click to set color">
+                  <tr>
+                    <td>Primairy color</td>
+                    <td>Secondairy color</td>
+                  </tr>
+                  <tr>
+                    <td (click)="maileditorFooter.style['color'] = company.companyprimairycolor">
+                      {{company.companyprimairycolor}}</td>
+                    <td (click)="maileditorFooter.style['color'] = company.companysecondarycolor">
+                      {{company.companysecondarycolor}}</td>
+                  </tr>
+                </table>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field>
+              <mat-label>Select font</mat-label>
+              <mat-select [(value)]="maileditorFooter.style['font-family']">
+                <mat-option>None</mat-option>
+                <mat-option value="Arial, Helvetica, sans-serif">Arial</mat-option>
+                <mat-option value="'Arial Black', Gadget, sans-serif">Arial Black</mat-option>
+                <mat-option value="Tahoma, Geneva, sans-serif">Tahoma</mat-option>
+                <mat-option value="'Times New Roman', Times, serif">Times New Roman</mat-option>
+                <mat-option value="Roboto">Roboto</mat-option>
+                <mat-option value="Open Sans">Open Sans</mat-option>
+                <mat-option value="Baloo Bhai">Baloo Bhai</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <table matTooltip="click to set font">
+              <tr>
+                <td>company font</td>
+              </tr>
+              <tr>
+                <td (click)="maileditorButton.style['font-family'] = company.companyfont">
+                  {{company.companyfont}}</td>
+              </tr>
+                        
+              <mat-form-field>
+                  <mat-select [(value)]="maileditorFooter.style['align']" placeholder="Align"
+                    (selectionChange)="changetextalign(maileditorFooter.style['align'])">
+                    <mat-option value="left">left</mat-option>
+                    <mat-option value="center">center</mat-option>
+                    <mat-option value="right">right</mat-option>
+                    <mat-option value="justify">justify</mat-option>
+                  </mat-select>
+                </mat-form-field>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+      <div *ngIf="Text">Edit text
+        <table>
+          <tr>
+              <td>
+                <mat-form-field>
+                  <mat-select [(value)]="maileditorText.style['align']" placeholder="Align"
+                    (selectionChange)="changetextalign(maileditorText.style['align'])">
+                    <mat-option value="left">left</mat-option>
+                    <mat-option value="center">center</mat-option>
+                    <mat-option value="right">right</mat-option>
+                    <mat-option value="justify">justify</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr fxLayout="row">                    
+              <span style="width: 50px; margin: 10px;"><mat-icon>border_top</mat-icon></span>                
+              <span style="width: 50px; margin: 10px;"><mat-icon>border_right</mat-icon></span>                  
+              <span style="width: 50px; margin: 10px;"><mat-icon>border_bottom</mat-icon></span>
+              <span style="width: 50px; margin: 10px;"><mat-icon>border_left</mat-icon></span>                    
+          </tr>
+          <tr fxLayout="row"> 
+              <mat-form-field style="max-width: 46px;">
+                <input [(ngModel)]="selectedPadding['padding-top']" type="number" matInput (change)="onChangePadding(maileditorText, 'padding-top');">
+                <mat-hint>px</mat-hint>
+              </mat-form-field>
+            
+              <mat-form-field style="max-width: 46px;">
+                <input [(ngModel)]="selectedPadding['padding-right']" type="number" matInput (change)="onChangePadding(maileditorText, 'padding-right');">
+                <mat-hint>px</mat-hint>
+              </mat-form-field>
+            
+              <mat-form-field style="max-width: 46px;">
+                <input  [(ngModel)]="selectedPadding['padding-bottom']" type="number" matInput (change)="onChangePadding(maileditorText, 'padding-bottom');">
+                <mat-hint>px</mat-hint>
+              </mat-form-field>
+            
+              <mat-form-field style="max-width: 46px;">
+                <input  [(ngModel)]="selectedPadding['padding-left']" type="number" matInput (change)="onChangePadding(maileditorText, 'padding-left');">
+                <mat-hint>px</mat-hint>
+              </mat-form-field>
+          </tr>
+          </table>
+       </div>
+
+
+
+  </mat-card>
+
+</div>
